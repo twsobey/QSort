@@ -1,0 +1,733 @@
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=windows-1252">
+    <title>Q Sort</title>
+
+    <script async="" src="Q%20Sort_files/analytics.js"></script><script>
+      // Only change these variables. First, list how many statements should be in each well, then provide the statements
+      var maxPerWell = [1, 2, 3, 4, 3, 2, 1];
+      var statementArray = [
+            "Has knowledge of the scope of practice of trauma-informed treatment principles.",
+            "Has knowledge of current evidence-based trauma interventions and practice.",
+            "Has knowledge of the common symptoms and responses to trauma (including cognitive, emotional, core beliefs, and behavioral).",
+            "Has knowledge of how trauma impacts domains of functioning (including cognitive, emotional, core beliefs, behavioral, physical, spiritual, relational, and identity).",
+            "Has knowledge of grief and loss connected to trauma.",
+            "Has understanding of the types and context of various trauma exposure (e.g. relational, acute, chronic, episodic, developmental trauma, witness vs. direct experience).",
+            "Has knowledge of the differences in prevalence, risk and resilience factors, and trajectories of trauma among different populations and settings (e.g. women, men, children, adults, veterans, civilians, SES, sexual orientation, race/ethnicity, etc.).",
+            "Has knowledge of legal and ethical issues relevant to trauma-exposed populations.",
+            "Has knowledge of the developmental impact of childhood trauma (including attachment, affect regulation, cognitive and language development).",
+            "Has knowledge of the consequences of trauma on the family, community, and other care-giving systems.",
+            "Has knowledge that trauma reactions are inherently complex and may affect individuals differently based on stressors, previous exposures, and protective or risk factors.",
+            "Has understanding of the subjective nature of trauma and how systems surrounding the individual influence this response (i.e. reactions of caregivers following disclosure of sexual abuse to the child).",
+            "Has knowledge of the impact of the social, historical, and cultural contexts of trauma including systemic (e.g. racially-based) trauma, historical trauma, intergeneration transmission of trauma and barriers associated with these contexts.",
+            "Has knowledge of the neurobiology of trauma including key brain structures and the stress/survival response system.",
+            "Has knowledge of pharmacological treatment in relation to trauma.",
+            "Has knowledge of appropriate diagnoses, prevention of misdiagnosis, co-occurring disorders, and relationship between mental illness and trauma."
+
+      ];
+        
+      var maxPerWe2ll = [2, 3, 4, 5, 4, 3, 2];
+      var state2mentArray = [
+            "Demonstrates the ability to strengthen connection with clients' families, social networks, care systems.",
+            "Demonstrates the ability to collaborate with clients' families, social networks, care systems, and other service provides.", 
+            "Demonstrates the ability to implement trauma-informed services.", 
+            "Demonstrates the ability to prevent re-traumatization and prevent harm.", 
+            "Demonstrates the ability to establish safety (including using grounding skills within and at the end of session), screen for harm to self or others, and develop a safety plan.", 
+            "Demonstrates the ability to manage personal reactions and distress within session when working with trauma exposed populations.", 
+            "Demonstrates the ability to address vicarious trauma, maintenance of own psychological health, and self-care when working with trauma exposed populations.", 
+            "Demonstrates the ability to use client-centered counseling skills to establish a collaborative relationship and build trust.", 
+            "Demonstrates the ability to select developmentally appropriate strategies for work with children and adolescents in trauma treatment.", 
+            "Demonstrates the ability to select and tailor approaches, and conduct on going assessment of the effectiveness of trauma treatment based on the individual experience and complex nature of trauma.", 
+            "Demonstrates the ability to recognize trauma early in treatment and conduct valid and appropriate trauma screenings and assessments.", 
+            "Demonstrates a willingness to ask about trauma exposure and symptoms, and implement non-avoidant treatment strategies.", 
+            "Demonstrates the ability to appropriately reprocess traumatic memories and develop a coherent trauma narrative.", 
+            "Demonstrates the ability to use trauma-focused skills and evidence-based interventions to resolve cognitive, emotional, sensory, and behavioral symptoms.", 
+            "Demonstrates the ability to communicate knowledge about trauma effectively with multiple audiences including, other providers, and community and policy leaders.", 
+            "Demonstrates the ability to provide psychoeducation about trauma-informed services (including neurobiology of trauma, coping skills, client's expectations of treatment, common symptoms, screen and assessment).", 
+            "Demonstrates the ability to recognize own limits of clinical competence and seek supervision, consultation, or make appropriate referrals when necessary.", 
+            "Demonstrates the use of culturally sensitive intervention and treatment strategies.", 
+            "Demonstrates the ability to conceptualize the individual and the trauma experience through a sociocultural lens and context of their environment.", 
+            "Demonstrates the use of a strengths-based approach to promote resilience (including viewing trauma-related behaviors as adaptive, confidence in recovery, facilitating hope, and enhancing protective factors).", 
+            "Empowers the client to be in control of his/her own recovery.", 
+            "Demonstrates the ability to reduce symptom distress through resource building, coping strategies, grounding skills, etc.", 
+            "Demonstrates awareness of the impact of one's own history, values, and vulnerabilities on trauma treatment delivery."
+      ];
+        
+    /*********************************************************
+    ***       DON'T CHANGE ANYTHING BELOW HERE!!!          ***
+    *********************************************************/
+    </script>
+        
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="Q%20Sort_files/bootstrap.css">
+
+    <!-- jQuery library -->
+    <script src="Q%20Sort_files/jquery.js"></script>
+
+    <!-- Latest compiled JavaScript -->
+    <script src="Q%20Sort_files/bootstrap.js"></script>
+    
+    <!-- Add Font Awesome for icons on buttons -->
+    <link href="Q%20Sort_files/font-awesome.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+    
+    <script>
+      // Set variables to automatically control width of wells  
+      var wellWidth = Math.floor((101 - maxPerWell.length) / maxPerWell.length);
+      var offSet = Math.floor(maxPerWell.length / 2);
+        
+      // Create array for tracking whether each well has the correct number of statements
+      var wellFull = [];
+      for (i=0; i < maxPerWell.length; i++) {
+          wellFull.push(false);
+      }
+        
+      var well2Full = [];
+      for (i=0; i < maxPerWe2ll.length; i++) {
+          well2Full.push(false);
+      }
+            
+    // Move each statement when the radio button is clicked
+    $(document).ready(function(){
+    $('input[type=radio]').click(function(){
+        var whichStatement = "#" + this.name;
+        var whichText = whichStatement + "text";
+        $(whichStatement).fadeOut("slow")           // Fadeout the statement from the Statement Stack
+        var whichWell = "#" + (this.value);
+        setTimeout(function(){                      // Move the statement to the correct well, wait 1 second for Fadeout to run
+         $(whichStatement).appendTo(whichWell);
+         $(whichStatement).fadeIn("slow");          // FadeIn at new location
+         $(whichStatement).removeClass("statement-stack").addClass("statement-well");
+         $(whichText).hide();
+            
+         colorWells();  
+            
+        }, 1000);
+    });
+});
+        
+
+        function allowDrop(ev) {
+            ev.preventDefault();
+        }
+
+        function drag(ev) {
+            ev.dataTransfer.setData("text", ev.target.id);
+            $(".well").css("min-height", "750px");
+        }
+
+        function drop(ev) {
+            ev.preventDefault();
+            $(".well").css("min-height", "10px");
+            var wellFlag = true; // Assuming the statement's dropped on a well and not another statement
+            for (i = 0; i < statementArray.length; i++) {
+                var state = "statement" + i;
+                if (ev.target.id == state) { 
+                    wellFlag = false; // Flip flag if statement is dropped on another statement
+                    var data = ev.dataTransfer.getData("text");
+                    var whichWell = "#" + ev.target.parentElement.id;
+                    $("#" + data).appendTo(whichWell); // Append statement in parent well if dropped on a statement
+                    
+                    // Resetting the radio button to the correct well after drag-n-drop
+                    document.getElementById(data + ev.target.parentElement.id).checked = true;
+                    
+                    colorWells();
+                      
+                }
+            }
+            
+            for (i = 0; i < state2mentArray.length; i++) {
+                var state = "state2ment" + i;
+                if (ev.target.id == state) { 
+                    wellFlag = false; // Flip flag if statement is dropped on another statement
+                    var data = ev.dataTransfer.getData("text");
+                    var whichWell = "#" + ev.target.parentElement.id;
+                    $("#" + data).appendTo(whichWell); // Append statement in parent well if dropped on a statement
+                    
+                    // Resetting the radio button to the correct well after drag-n-drop
+                    document.getElementById(data + ev.target.parentElement.id).checked = true;
+                    
+                    colorWells();
+                      
+                }
+            }
+            
+            // Drop the statement in the well if it wasn't dropped above
+            if(wellFlag) {
+            var data = ev.dataTransfer.getData("text");
+            ev.target.appendChild(document.getElementById(data));
+                
+            // Resetting the radio button to the correct well after drag-n-drop
+            console.log(data + "  " + ev.target.id);
+            document.getElementById(data + ev.target.id).checked = true;
+            }
+            
+            colorWells();
+        }
+
+        // Check number in each well and change color to reflect whether it can take more or has too many
+        function colorWells() {
+            for (x = 0; x < maxPerWell.length; x++) {
+             var rating = x - offSet;
+             var headerID = "#h" + rating;
+             var wellID = "#well" + rating;
+             var divLength = wellID + " > div";
+             // $(headerID).text("#well" + rating + " " + $(divLength).length); Used for testing to keep track of current number and max number per well
+             if (($(divLength).length) > maxPerWell[x]) {
+                 $(wellID).css("background-color", "pink");
+                 wellFull[x] = false;
+             } else if (($(divLength).length) == maxPerWell[x]) {
+                 $(wellID).css("background-color", "#f5f5f5");
+                 wellFull[x] = true;
+             } else {
+                 $(wellID).css("background-color", "lightgreen");
+                 wellFull[x] = false;
+             }
+          }
+            
+            for (x = 0; x < maxPerWe2ll.length; x++) {
+             var rating = x - offSet;
+             var headerID = "#h" + rating;
+             var wellID = "#we2ll" + rating;
+             var divLength = wellID + " > div";
+             // $(headerID).text("#well" + rating + " " + $(divLength).length); Used for testing to keep track of current number and max number per well
+             if (($(divLength).length) > maxPerWe2ll[x]) {
+                 $(wellID).css("background-color", "pink");
+                 well2Full[x] = false;
+             } else if (($(divLength).length) == maxPerWe2ll[x]) {
+                 $(wellID).css("background-color", "#f5f5f5");
+                 well2Full[x] = true;
+             } else {
+                 $(wellID).css("background-color", "lightgreen");
+                 well2Full[x] = false;
+             }
+          } 
+         validateForm();
+        }
+        
+    </script>
+    
+<style>
+
+    #statements {
+        position: absolute;
+        width: 450px;
+        height: 100px;
+    }
+    
+    #state2ments {
+        position: absolute;
+        width: 450px;
+        height: 100px;
+    }
+    
+    .statement-stack {
+        z-index: 5;
+        top:5px;
+        left:20px;
+        position: absolute;
+        background-color: white;
+        width: 100%;
+        height: 165px;
+        border-width: 2px;
+        border-style: solid;
+        border-radius: 7px;
+        padding: 3px;
+    }
+    
+    .statement-well {
+        z-index: 0;
+        font-size: small;
+        position: relative;
+        background-color: white;
+        width: 100%;
+        border-width: 2px;
+        border-style: solid;
+        border-radius: 7px;
+        padding: 3px;
+        margin-top: 5px;
+        cursor: move;
+        max-height: 150px;
+        overflow: hidden;
+    }
+
+    .statement-well:hover {
+        max-height: 700px;
+        height: auto;
+        overflow: visible;
+        background-color: cornsilk;
+    }
+    
+    .row {
+        margin-right: 0px;
+        margin-left: 0px;
+    }
+    
+    .well {
+        padding: 9px 5px;
+    }
+    
+    .accordion-toggle:hover {
+      text-decoration: none;
+    }
+    
+    li {
+        margin: 5px 0;
+    }
+    
+    p {
+        font-size: medium;
+    }
+    
+    .jumbotron h2 {
+        text-align: center;
+        margin: -15px 0 0 0;
+        text-shadow: 2px 2px 4px darkgray;
+    }
+    
+    ol {
+        font-size: medium;
+    }
+</style>
+</head>
+<body> 
+<div class="container">
+  <div class="jumbotron">
+    <h2>Counselor Educators' Perspectives on Best Practices in Teaching Trauma<br>Q Methodology Research</h2>
+  </div>
+    <p>This study measures your subjective viewpoint on which aspects 
+are most important when teaching trauma within the CACREP standards for 
+counselor education graduate programs. The focus of this research is to 
+clarify entry-level training competencies for counselors in training. 
+There are no "right" answers; please answer the questions from your own 
+perspective.</p>
+    <p>You will complete 5 sections: demographic data and pre-sort 
+questions, knowledge Q sort, knowledge post-sort questions, skills Q 
+sort, and skills post-sort questions. <strong>YOU MUST ENTER DATA FOR ALL FIELDS.  IF YOU DO NOT HAVE AN ANSWER, ENTER N/A.</strong></p>
+    <br>
+ <form id="qSortForm">
+     <div class="panel-group" id="accordion">
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h4 class="panel-title">
+        <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#collapseOne">
+          <span class="glyphicon glyphicon-plus"></span>
+          Pre-sort Questions:
+        </a>
+      </h4>
+    </div>
+    <div id="collapseOne" class="panel-collapse collapse">
+      <div class="panel-body">
+          <table class="table table-striped">
+              <tbody><tr>
+                <td>
+                  Age: <input style="float: right;" name="age" class="required" onblur="validateForm()" type="text">
+                  </td>
+                  <td>Gender: <input style="float: right;" name="gender" class="required" onblur="validateForm()" type="text">
+                  </td>
+              </tr>
+              <tr>
+                  <td>Race/Ethnicity: <input style="float: right;" name="race" class="required" onblur="validateForm()" type="text">
+                  </td>
+                  <td>Degree Field: <input style="float: right;" name="degree" class="required" onblur="validateForm()" type="text">
+                  </td>
+              </tr>
+              <tr>
+              <td colspan="2">
+                  How many years experience do you have teaching in counselor education? <input style="float: right;" name="years" class="required" onblur="validateForm()" type="text"></td>
+              </tr>
+              <tr>
+              <td colspan="2">
+                  <p>Have you published on topics related to trauma counseling?
+                        <span style="float: right;">
+                            <label class="radio-inline"><input name="publishedYN" value="yes" onclick="enableMore(this.value, 'published')" type="radio">Yes</label>
+                            <label class="radio-inline"><input name="publishedYN" value="no" checked="checked" onclick="enableMore(this.value, 'published')" type="radio">No</label>
+                        </span>
+                  </p>
+                  <span id="publishedSpan" style="display: none;">In which journals or other formats have you published?<textarea class="form-control" rows="2" name="published" id="published" onblur="validateForm()" disabled="disabled"></textarea></span></td>
+              </tr>
+              <tr>
+                  <td colspan="2">
+                      <p>Have you taught truama-focused courses in counselor education?
+                          <span style="float: right;">
+                            <label class="radio-inline"><input name="taughtYN" value="yes" onclick="enableMore(this.value, 'taught')" type="radio">Yes</label>
+                            <label class="radio-inline"><input name="taughtYN" value="no" checked="checked" onclick="enableMore(this.value, 'taught')" type="radio">No</label>
+                        </span>
+                  </p>
+                      <div id="taughtSpan" style="display: none;"><p>How many semesters have you taught trauma-focused courses? <input style="float: right;" name="semesters" class="required" onblur="validateForm()" value="0" type="text"></p>
+                          Please list the course titles: <textarea class="form-control" rows="2" name="taught" id="taught" onblur="validateForm()"></textarea></div></td>
+              </tr>
+              <tr>
+              <td colspan="2"><p>Does your university offer any other trauma-focused courses?
+                        <span style="float: right;">
+                            <label class="radio-inline"><input name="uniCoursesYN" value="yes" onclick="enableMore(this.value, 'uniCourses')" type="radio">Yes</label>
+                            <label class="radio-inline"><input name="uniCoursesYN" value="no" checked="checked" onclick="enableMore(this.value, 'uniCourses')" type="radio">No</label>
+                        </span>
+                  </p>
+                  <span id="uniCoursesSpan" style="display: none;">If so, please list the course titles? <textarea class="form-control" rows="2" name="uniCourses" id="uniCourses" onblur="validateForm()" disabled="disabled"></textarea></span></td>
+              </tr>
+              <tr>
+              <td colspan="2">
+                <p>Under which CACREP standards is your program accredited or aligned?</p>
+                <ul>
+                    <li>Under which CACPREP standards is your counseling program accredited?
+                        <span style="float: right;">
+                            <label class="radio-inline"><input name="accredited" value="2016" type="radio">2016</label>
+                            <label class="radio-inline"><input name="accredited" value="2009" type="radio">2009</label>
+                            <label class="radio-inline"><input name="accredited" value="none" checked="checked" type="radio">Neither</label>
+                        </span>
+                    </li>
+                    <li>Under which CACREP standards is your counseling program aligned?
+                        <span style="float: right;">
+                            <label class="radio-inline"><input name="aligned" value="2016" type="radio">2016</label>
+                            <label class="radio-inline"><input name="aligned" value="2009" type="radio">2009</label>
+                            <label class="radio-inline"><input name="aligned" value="none" checked="checked" type="radio">Neither</label>
+                        </span>
+                    </li>
+                </ul>
+              </td>
+              </tr>
+              <tr>
+                  <td colspan="2">How do you define trauma? <textarea class="form-control required" rows="2" name="trauma" onblur="validateForm()"></textarea></td>
+              </tr>
+              <tr>
+                  <td colspan="2">How do you believe trauma is best 
+included in the graduate curriculum (e.g. focused courses, included 
+infused throughout, or a combination of the two)? <textarea class="form-control required" rows="2" name="included" onblur="validateForm()"></textarea></td>
+              </tr>
+              <tr>
+                  <td colspan="2">What experience do you have providing trauma counseling? <textarea class="form-control required" rows="2" name="experience" onblur="validateForm()"></textarea></td>
+              </tr>
+              <tr>
+                  <td colspan="2">Have you received any specialized 
+training or hold do you hold any trauma counseling certifications (e.g 
+EMDR, hypnotherapy for trauma treatment, etc)? <textarea class="form-control required" rows="2" name="training" onblur="validateForm()"></textarea></td>
+              </tr>
+          </tbody></table>
+   </div>
+    </div>
+  </div>
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h4 class="panel-title">
+        <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo">
+          <span class="glyphicon glyphicon-plus"></span>
+          Knowledge Q Sort: All columns must go gray (not red or green) to submit the form
+        </a>
+      </h4>
+    </div>
+    <div id="collapseTwo" class="panel-collapse collapse">
+      <div class="panel-body">
+          <p>You will be presented with 16 statements, one at a time.</p>
+              <ol>
+                  <li>Rank each statement initially by selecting a value between MOST UNIMPORTANT to MOST IMPORTANT.</li>
+                  <li>The statements will be arranged in an inverted, 
+normal distribution bell curve.  You may rearrange statements by 
+dragging and dropping them to a different column.</li>
+                  <li>If the column turns red, you have too many statements.  Drag and drop a statement from the red column to a green column.</li>
+              </ol>
+          <p>Given the wide scope of traumatology and the limited time 
+and space within a counselor education graduate program, which of these 
+knowledge statements are the highest priority when teaching on the topic
+ of trauma?</p>
+  <div id="statements">
+ 
+  <div draggable="true" ondragstart="drag(event)" class="row statement-stack sortable" id="statement0">Has knowledge of the scope of practice of trauma-informed treatment principles.<div id="statement0text"><hr style="width:65%; margin: 7px auto;"><table style="width:98%; font-size:small;"><tbody><tr><td style="float:left;">MOST UNIMPORTANT</td><td style="float:right; padding: 0 3px;">MOST IMPORTANT</td></tr></tbody></table><table style="width: 100%"><tbody><tr><td>-3</td><td>-2</td><td>-1</td><td>0</td><td>1</td><td>2</td><td>3</td></tr><tr><td><label><input name="statement0" value="well-3" id="statement0well-3" type="radio"></label></td><td><label><input name="statement0" value="well-2" id="statement0well-2" type="radio"></label></td><td><label><input name="statement0" value="well-1" id="statement0well-1" type="radio"></label></td><td><label><input name="statement0" value="well0" id="statement0well0" type="radio"></label></td><td><label><input name="statement0" value="well1" id="statement0well1" type="radio"></label></td><td><label><input name="statement0" value="well2" id="statement0well2" type="radio"></label></td><td><label><input name="statement0" value="well3" id="statement0well3" type="radio"></label></td></tr></tbody></table></div></div><div draggable="true" ondragstart="drag(event)" class="row statement-stack sortable" id="statement1">Has knowledge of current evidence-based trauma interventions and practice.<div id="statement1text"><hr style="width:65%; margin: 7px auto;"><table style="width:98%; font-size:small;"><tbody><tr><td style="float:left;">MOST UNIMPORTANT</td><td style="float:right; padding: 0 3px;">MOST IMPORTANT</td></tr></tbody></table><table style="width: 100%"><tbody><tr><td>-3</td><td>-2</td><td>-1</td><td>0</td><td>1</td><td>2</td><td>3</td></tr><tr><td><label><input name="statement1" value="well-3" id="statement1well-3" type="radio"></label></td><td><label><input name="statement1" value="well-2" id="statement1well-2" type="radio"></label></td><td><label><input name="statement1" value="well-1" id="statement1well-1" type="radio"></label></td><td><label><input name="statement1" value="well0" id="statement1well0" type="radio"></label></td><td><label><input name="statement1" value="well1" id="statement1well1" type="radio"></label></td><td><label><input name="statement1" value="well2" id="statement1well2" type="radio"></label></td><td><label><input name="statement1" value="well3" id="statement1well3" type="radio"></label></td></tr></tbody></table></div></div><div draggable="true" ondragstart="drag(event)" class="row statement-stack sortable" id="statement2">Has knowledge of the common symptoms and responses to trauma (including cognitive, emotional, core beliefs, and behavioral).<div id="statement2text"><hr style="width:65%; margin: 7px auto;"><table style="width:98%; font-size:small;"><tbody><tr><td style="float:left;">MOST UNIMPORTANT</td><td style="float:right; padding: 0 3px;">MOST IMPORTANT</td></tr></tbody></table><table style="width: 100%"><tbody><tr><td>-3</td><td>-2</td><td>-1</td><td>0</td><td>1</td><td>2</td><td>3</td></tr><tr><td><label><input name="statement2" value="well-3" id="statement2well-3" type="radio"></label></td><td><label><input name="statement2" value="well-2" id="statement2well-2" type="radio"></label></td><td><label><input name="statement2" value="well-1" id="statement2well-1" type="radio"></label></td><td><label><input name="statement2" value="well0" id="statement2well0" type="radio"></label></td><td><label><input name="statement2" value="well1" id="statement2well1" type="radio"></label></td><td><label><input name="statement2" value="well2" id="statement2well2" type="radio"></label></td><td><label><input name="statement2" value="well3" id="statement2well3" type="radio"></label></td></tr></tbody></table></div></div><div draggable="true" ondragstart="drag(event)" class="row statement-stack sortable" id="statement3">Has
+ knowledge of how trauma impacts domains of functioning (including 
+cognitive, emotional, core beliefs, behavioral, physical, spiritual, 
+relational, and identity).<div id="statement3text"><hr style="width:65%; margin: 7px auto;"><table style="width:98%; font-size:small;"><tbody><tr><td style="float:left;">MOST UNIMPORTANT</td><td style="float:right; padding: 0 3px;">MOST IMPORTANT</td></tr></tbody></table><table style="width: 100%"><tbody><tr><td>-3</td><td>-2</td><td>-1</td><td>0</td><td>1</td><td>2</td><td>3</td></tr><tr><td><label><input name="statement3" value="well-3" id="statement3well-3" type="radio"></label></td><td><label><input name="statement3" value="well-2" id="statement3well-2" type="radio"></label></td><td><label><input name="statement3" value="well-1" id="statement3well-1" type="radio"></label></td><td><label><input name="statement3" value="well0" id="statement3well0" type="radio"></label></td><td><label><input name="statement3" value="well1" id="statement3well1" type="radio"></label></td><td><label><input name="statement3" value="well2" id="statement3well2" type="radio"></label></td><td><label><input name="statement3" value="well3" id="statement3well3" type="radio"></label></td></tr></tbody></table></div></div><div draggable="true" ondragstart="drag(event)" class="row statement-stack sortable" id="statement4">Has knowledge of grief and loss connected to trauma.<div id="statement4text"><hr style="width:65%; margin: 7px auto;"><table style="width:98%; font-size:small;"><tbody><tr><td style="float:left;">MOST UNIMPORTANT</td><td style="float:right; padding: 0 3px;">MOST IMPORTANT</td></tr></tbody></table><table style="width: 100%"><tbody><tr><td>-3</td><td>-2</td><td>-1</td><td>0</td><td>1</td><td>2</td><td>3</td></tr><tr><td><label><input name="statement4" value="well-3" id="statement4well-3" type="radio"></label></td><td><label><input name="statement4" value="well-2" id="statement4well-2" type="radio"></label></td><td><label><input name="statement4" value="well-1" id="statement4well-1" type="radio"></label></td><td><label><input name="statement4" value="well0" id="statement4well0" type="radio"></label></td><td><label><input name="statement4" value="well1" id="statement4well1" type="radio"></label></td><td><label><input name="statement4" value="well2" id="statement4well2" type="radio"></label></td><td><label><input name="statement4" value="well3" id="statement4well3" type="radio"></label></td></tr></tbody></table></div></div><div draggable="true" ondragstart="drag(event)" class="row statement-stack sortable" id="statement5">Has
+ understanding of the types and context of various trauma exposure (e.g.
+ relational, acute, chronic, episodic, developmental trauma, witness vs.
+ direct experience).<div id="statement5text"><hr style="width:65%; margin: 7px auto;"><table style="width:98%; font-size:small;"><tbody><tr><td style="float:left;">MOST UNIMPORTANT</td><td style="float:right; padding: 0 3px;">MOST IMPORTANT</td></tr></tbody></table><table style="width: 100%"><tbody><tr><td>-3</td><td>-2</td><td>-1</td><td>0</td><td>1</td><td>2</td><td>3</td></tr><tr><td><label><input name="statement5" value="well-3" id="statement5well-3" type="radio"></label></td><td><label><input name="statement5" value="well-2" id="statement5well-2" type="radio"></label></td><td><label><input name="statement5" value="well-1" id="statement5well-1" type="radio"></label></td><td><label><input name="statement5" value="well0" id="statement5well0" type="radio"></label></td><td><label><input name="statement5" value="well1" id="statement5well1" type="radio"></label></td><td><label><input name="statement5" value="well2" id="statement5well2" type="radio"></label></td><td><label><input name="statement5" value="well3" id="statement5well3" type="radio"></label></td></tr></tbody></table></div></div><div draggable="true" ondragstart="drag(event)" class="row statement-stack sortable" id="statement6">Has
+ knowledge of the differences in prevalence, risk and resilience 
+factors, and trajectories of trauma among different populations and 
+settings (e.g. women, men, children, adults, veterans, civilians, SES, 
+sexual orientation, race/ethnicity, etc.).<div id="statement6text"><hr style="width:65%; margin: 7px auto;"><table style="width:98%; font-size:small;"><tbody><tr><td style="float:left;">MOST UNIMPORTANT</td><td style="float:right; padding: 0 3px;">MOST IMPORTANT</td></tr></tbody></table><table style="width: 100%"><tbody><tr><td>-3</td><td>-2</td><td>-1</td><td>0</td><td>1</td><td>2</td><td>3</td></tr><tr><td><label><input name="statement6" value="well-3" id="statement6well-3" type="radio"></label></td><td><label><input name="statement6" value="well-2" id="statement6well-2" type="radio"></label></td><td><label><input name="statement6" value="well-1" id="statement6well-1" type="radio"></label></td><td><label><input name="statement6" value="well0" id="statement6well0" type="radio"></label></td><td><label><input name="statement6" value="well1" id="statement6well1" type="radio"></label></td><td><label><input name="statement6" value="well2" id="statement6well2" type="radio"></label></td><td><label><input name="statement6" value="well3" id="statement6well3" type="radio"></label></td></tr></tbody></table></div></div><div draggable="true" ondragstart="drag(event)" class="row statement-stack sortable" id="statement7">Has knowledge of legal and ethical issues relevant to trauma-exposed populations.<div id="statement7text"><hr style="width:65%; margin: 7px auto;"><table style="width:98%; font-size:small;"><tbody><tr><td style="float:left;">MOST UNIMPORTANT</td><td style="float:right; padding: 0 3px;">MOST IMPORTANT</td></tr></tbody></table><table style="width: 100%"><tbody><tr><td>-3</td><td>-2</td><td>-1</td><td>0</td><td>1</td><td>2</td><td>3</td></tr><tr><td><label><input name="statement7" value="well-3" id="statement7well-3" type="radio"></label></td><td><label><input name="statement7" value="well-2" id="statement7well-2" type="radio"></label></td><td><label><input name="statement7" value="well-1" id="statement7well-1" type="radio"></label></td><td><label><input name="statement7" value="well0" id="statement7well0" type="radio"></label></td><td><label><input name="statement7" value="well1" id="statement7well1" type="radio"></label></td><td><label><input name="statement7" value="well2" id="statement7well2" type="radio"></label></td><td><label><input name="statement7" value="well3" id="statement7well3" type="radio"></label></td></tr></tbody></table></div></div><div draggable="true" ondragstart="drag(event)" class="row statement-stack sortable" id="statement8">Has
+ knowledge of the developmental impact of childhood trauma (including 
+attachment, affect regulation, cognitive and language development).<div id="statement8text"><hr style="width:65%; margin: 7px auto;"><table style="width:98%; font-size:small;"><tbody><tr><td style="float:left;">MOST UNIMPORTANT</td><td style="float:right; padding: 0 3px;">MOST IMPORTANT</td></tr></tbody></table><table style="width: 100%"><tbody><tr><td>-3</td><td>-2</td><td>-1</td><td>0</td><td>1</td><td>2</td><td>3</td></tr><tr><td><label><input name="statement8" value="well-3" id="statement8well-3" type="radio"></label></td><td><label><input name="statement8" value="well-2" id="statement8well-2" type="radio"></label></td><td><label><input name="statement8" value="well-1" id="statement8well-1" type="radio"></label></td><td><label><input name="statement8" value="well0" id="statement8well0" type="radio"></label></td><td><label><input name="statement8" value="well1" id="statement8well1" type="radio"></label></td><td><label><input name="statement8" value="well2" id="statement8well2" type="radio"></label></td><td><label><input name="statement8" value="well3" id="statement8well3" type="radio"></label></td></tr></tbody></table></div></div><div draggable="true" ondragstart="drag(event)" class="row statement-stack sortable" id="statement9">Has knowledge of the consequences of trauma on the family, community, and other care-giving systems.<div id="statement9text"><hr style="width:65%; margin: 7px auto;"><table style="width:98%; font-size:small;"><tbody><tr><td style="float:left;">MOST UNIMPORTANT</td><td style="float:right; padding: 0 3px;">MOST IMPORTANT</td></tr></tbody></table><table style="width: 100%"><tbody><tr><td>-3</td><td>-2</td><td>-1</td><td>0</td><td>1</td><td>2</td><td>3</td></tr><tr><td><label><input name="statement9" value="well-3" id="statement9well-3" type="radio"></label></td><td><label><input name="statement9" value="well-2" id="statement9well-2" type="radio"></label></td><td><label><input name="statement9" value="well-1" id="statement9well-1" type="radio"></label></td><td><label><input name="statement9" value="well0" id="statement9well0" type="radio"></label></td><td><label><input name="statement9" value="well1" id="statement9well1" type="radio"></label></td><td><label><input name="statement9" value="well2" id="statement9well2" type="radio"></label></td><td><label><input name="statement9" value="well3" id="statement9well3" type="radio"></label></td></tr></tbody></table></div></div><div draggable="true" ondragstart="drag(event)" class="row statement-stack sortable" id="statement10">Has
+ knowledge that trauma reactions are inherently complex and may affect 
+individuals differently based on stressors, previous exposures, and 
+protective or risk factors.<div id="statement10text"><hr style="width:65%; margin: 7px auto;"><table style="width:98%; font-size:small;"><tbody><tr><td style="float:left;">MOST UNIMPORTANT</td><td style="float:right; padding: 0 3px;">MOST IMPORTANT</td></tr></tbody></table><table style="width: 100%"><tbody><tr><td>-3</td><td>-2</td><td>-1</td><td>0</td><td>1</td><td>2</td><td>3</td></tr><tr><td><label><input name="statement10" value="well-3" id="statement10well-3" type="radio"></label></td><td><label><input name="statement10" value="well-2" id="statement10well-2" type="radio"></label></td><td><label><input name="statement10" value="well-1" id="statement10well-1" type="radio"></label></td><td><label><input name="statement10" value="well0" id="statement10well0" type="radio"></label></td><td><label><input name="statement10" value="well1" id="statement10well1" type="radio"></label></td><td><label><input name="statement10" value="well2" id="statement10well2" type="radio"></label></td><td><label><input name="statement10" value="well3" id="statement10well3" type="radio"></label></td></tr></tbody></table></div></div><div draggable="true" ondragstart="drag(event)" class="row statement-stack sortable" id="statement11">Has
+ understanding of the subjective nature of trauma and how systems 
+surrounding the individual influence this response (i.e. reactions of 
+caregivers following disclosure of sexual abuse to the child).<div id="statement11text"><hr style="width:65%; margin: 7px auto;"><table style="width:98%; font-size:small;"><tbody><tr><td style="float:left;">MOST UNIMPORTANT</td><td style="float:right; padding: 0 3px;">MOST IMPORTANT</td></tr></tbody></table><table style="width: 100%"><tbody><tr><td>-3</td><td>-2</td><td>-1</td><td>0</td><td>1</td><td>2</td><td>3</td></tr><tr><td><label><input name="statement11" value="well-3" id="statement11well-3" type="radio"></label></td><td><label><input name="statement11" value="well-2" id="statement11well-2" type="radio"></label></td><td><label><input name="statement11" value="well-1" id="statement11well-1" type="radio"></label></td><td><label><input name="statement11" value="well0" id="statement11well0" type="radio"></label></td><td><label><input name="statement11" value="well1" id="statement11well1" type="radio"></label></td><td><label><input name="statement11" value="well2" id="statement11well2" type="radio"></label></td><td><label><input name="statement11" value="well3" id="statement11well3" type="radio"></label></td></tr></tbody></table></div></div><div draggable="true" ondragstart="drag(event)" class="row statement-stack sortable" id="statement12">Has
+ knowledge of the impact of the social, historical, and cultural 
+contexts of trauma including systemic (e.g. racially-based) trauma, 
+historical trauma, intergeneration transmission of trauma and barriers 
+associated with these contexts.<div id="statement12text"><hr style="width:65%; margin: 7px auto;"><table style="width:98%; font-size:small;"><tbody><tr><td style="float:left;">MOST UNIMPORTANT</td><td style="float:right; padding: 0 3px;">MOST IMPORTANT</td></tr></tbody></table><table style="width: 100%"><tbody><tr><td>-3</td><td>-2</td><td>-1</td><td>0</td><td>1</td><td>2</td><td>3</td></tr><tr><td><label><input name="statement12" value="well-3" id="statement12well-3" type="radio"></label></td><td><label><input name="statement12" value="well-2" id="statement12well-2" type="radio"></label></td><td><label><input name="statement12" value="well-1" id="statement12well-1" type="radio"></label></td><td><label><input name="statement12" value="well0" id="statement12well0" type="radio"></label></td><td><label><input name="statement12" value="well1" id="statement12well1" type="radio"></label></td><td><label><input name="statement12" value="well2" id="statement12well2" type="radio"></label></td><td><label><input name="statement12" value="well3" id="statement12well3" type="radio"></label></td></tr></tbody></table></div></div><div draggable="true" ondragstart="drag(event)" class="row statement-stack sortable" id="statement13">Has knowledge of the neurobiology of trauma including key brain structures and the stress/survival response system.<div id="statement13text"><hr style="width:65%; margin: 7px auto;"><table style="width:98%; font-size:small;"><tbody><tr><td style="float:left;">MOST UNIMPORTANT</td><td style="float:right; padding: 0 3px;">MOST IMPORTANT</td></tr></tbody></table><table style="width: 100%"><tbody><tr><td>-3</td><td>-2</td><td>-1</td><td>0</td><td>1</td><td>2</td><td>3</td></tr><tr><td><label><input name="statement13" value="well-3" id="statement13well-3" type="radio"></label></td><td><label><input name="statement13" value="well-2" id="statement13well-2" type="radio"></label></td><td><label><input name="statement13" value="well-1" id="statement13well-1" type="radio"></label></td><td><label><input name="statement13" value="well0" id="statement13well0" type="radio"></label></td><td><label><input name="statement13" value="well1" id="statement13well1" type="radio"></label></td><td><label><input name="statement13" value="well2" id="statement13well2" type="radio"></label></td><td><label><input name="statement13" value="well3" id="statement13well3" type="radio"></label></td></tr></tbody></table></div></div><div draggable="true" ondragstart="drag(event)" class="row statement-stack sortable" id="statement14">Has knowledge of pharmacological treatment in relation to trauma.<div id="statement14text"><hr style="width:65%; margin: 7px auto;"><table style="width:98%; font-size:small;"><tbody><tr><td style="float:left;">MOST UNIMPORTANT</td><td style="float:right; padding: 0 3px;">MOST IMPORTANT</td></tr></tbody></table><table style="width: 100%"><tbody><tr><td>-3</td><td>-2</td><td>-1</td><td>0</td><td>1</td><td>2</td><td>3</td></tr><tr><td><label><input name="statement14" value="well-3" id="statement14well-3" type="radio"></label></td><td><label><input name="statement14" value="well-2" id="statement14well-2" type="radio"></label></td><td><label><input name="statement14" value="well-1" id="statement14well-1" type="radio"></label></td><td><label><input name="statement14" value="well0" id="statement14well0" type="radio"></label></td><td><label><input name="statement14" value="well1" id="statement14well1" type="radio"></label></td><td><label><input name="statement14" value="well2" id="statement14well2" type="radio"></label></td><td><label><input name="statement14" value="well3" id="statement14well3" type="radio"></label></td></tr></tbody></table></div></div><div draggable="true" ondragstart="drag(event)" class="row statement-stack sortable" id="statement15">Has
+ knowledge of appropriate diagnoses, prevention of misdiagnosis, 
+co-occurring disorders, and relationship between mental illness and 
+trauma.<div id="statement15text"><hr style="width:65%; margin: 7px auto;"><table style="width:98%; font-size:small;"><tbody><tr><td style="float:left;">MOST UNIMPORTANT</td><td style="float:right; padding: 0 3px;">MOST IMPORTANT</td></tr></tbody></table><table style="width: 100%"><tbody><tr><td>-3</td><td>-2</td><td>-1</td><td>0</td><td>1</td><td>2</td><td>3</td></tr><tr><td><label><input name="statement15" value="well-3" id="statement15well-3" type="radio"></label></td><td><label><input name="statement15" value="well-2" id="statement15well-2" type="radio"></label></td><td><label><input name="statement15" value="well-1" id="statement15well-1" type="radio"></label></td><td><label><input name="statement15" value="well0" id="statement15well0" type="radio"></label></td><td><label><input name="statement15" value="well1" id="statement15well1" type="radio"></label></td><td><label><input name="statement15" value="well2" id="statement15well2" type="radio"></label></td><td><label><input name="statement15" value="well3" id="statement15well3" type="radio"></label></td></tr></tbody></table></div></div></div>     
+          
+<div id="wells" class="row" style="margin-top: 200px;">
+    <table style="width:98%;font-weight:bolder;"><tbody><tr><td style="float:left;">MOST UNIMPORTANT</td><td style="text-align: center;">MODERATELY UNIMPORTANT</td><td style="text-align: center; padding-left: 15px;">MODERATELY IMPORTANT</td><td style="float:right; padding: 0 10px;">MOST IMPORTANT</td></tr></tbody></table>
+    <br>
+    
+     <div style="float: left; margin-right: 1%; width: 13%;"><h4 style="text-align: center;" id="h-3"> -3</h4><div ondrop="drop(event)" ondragover="allowDrop(event)" class="well" id="well-3" style="background: lightgreen;"></div></div><div style="float: left; margin-right: 1%; width: 13%;"><h4 style="text-align: center;" id="h-2"> -2</h4><div ondrop="drop(event)" ondragover="allowDrop(event)" class="well" id="well-2" style="background: lightgreen;"></div></div><div style="float: left; margin-right: 1%; width: 13%;"><h4 style="text-align: center;" id="h-1"> -1</h4><div ondrop="drop(event)" ondragover="allowDrop(event)" class="well" id="well-1" style="background: lightgreen;"></div></div><div style="float: left; margin-right: 1%; width: 13%;"><h4 style="text-align: center;" id="h0"> 0</h4><div ondrop="drop(event)" ondragover="allowDrop(event)" class="well" id="well0" style="background: lightgreen;"></div></div><div style="float: left; margin-right: 1%; width: 13%;"><h4 style="text-align: center;" id="h1"> 1</h4><div ondrop="drop(event)" ondragover="allowDrop(event)" class="well" id="well1" style="background: lightgreen;"></div></div><div style="float: left; margin-right: 1%; width: 13%;"><h4 style="text-align: center;" id="h2"> 2</h4><div ondrop="drop(event)" ondragover="allowDrop(event)" class="well" id="well2" style="background: lightgreen;"></div></div><div style="float: left; margin-right: 1%; width: 13%;"><h4 style="text-align: center;" id="h3"> 3</h4><div ondrop="drop(event)" ondragover="allowDrop(event)" class="well" id="well3" style="background: lightgreen;"></div></div></div>   
+
+     </div>
+    </div>
+  </div>
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h4 class="panel-title">
+        <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#collapseThree">
+          <span class="glyphicon glyphicon-plus"></span>
+          Knowledge Post-sort Questions:
+        </a>
+      </h4>
+    </div>
+    <div id="collapseThree" class="panel-collapse collapse">
+      <div class="panel-body">
+          <table class="table table-striped">
+              <tbody><tr>
+                  <td>What knowledge is not represented here that you think is important to include? <textarea class="form-control required" rows="3" name="missing" onkeyup="validateForm()"></textarea></td>
+              </tr>
+              <tr>
+                  <td>Would you change the wording of any of the knowledge statements? If so how would you phrase them? <textarea class="form-control required" rows="3" name="reword" onkeyup="validateForm()"></textarea></td>
+              </tr>
+              <tr>
+                  <td>Why did you rank the TOP 2 categories the HIGHEST? What is MOST important about these statements? <textarea class="form-control required" rows="3" name="top" onkeyup="validateForm()"></textarea></td>
+              </tr>
+              <tr>
+                  <td>Why did you rank the BOTTOM 2 categories the LOWEST? What is MOST unimportant about these statements? <textarea class="form-control required" rows="3" name="bottom" onkeyup="validateForm()"></textarea></td>
+              </tr>
+              <tr>
+                  <td>Is there anything other information you would like to provide? <textarea class="form-control required" rows="3" name="otherInfo" onkeyup="validateForm()"></textarea></td>
+              </tr>
+          </tbody></table>
+   </div>
+   </div>
+    
+  </div>
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h4 class="panel-title">
+        <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#collapseFour">
+          <span class="glyphicon glyphicon-plus"></span>
+          Skills Q Sort: All columns must go gray (not red or green) to submit the form
+        </a>
+      </h4>
+    </div>
+    <div id="collapseFour" class="panel-collapse collapse">
+      <div class="panel-body">
+          <p>You will be presented with 23 statements, one at a time.</p>
+              <ol>
+                  <li>Rank each statement initially by selecting a value between MOST UNIMPORTANT to MOST IMPORTANT.</li>
+                  <li>The statements will be arranged in an inverted, 
+normal distribution bell curve.  You may rearrange statements by 
+dragging and dropping them to a different column.</li>
+                  <li>If the column turns red, you have too many statements.  Drag and drop a statement from the red column to a green column.</li>
+              </ol>
+          <p>Given the wide scope of traumatology and the limited time 
+and space within a counselor education graduate program, which of these 
+knowledge statements are the highest priority when teaching on the topic
+ of trauma?</p>
+  <div id="state2ments">
+ 
+  <div draggable="true" ondragstart="drag(event)" class="row statement-stack sortable" id="state2ment0">Demonstrates the ability to strengthen connection with clients' families, social networks, care systems.<div id="state2ment0text"><hr style="width:65%; margin: 7px auto;"><table style="width:98%; font-size:small;"><tbody><tr><td style="float:left;">MOST UNIMPORTANT</td><td style="float:right; padding: 0 3px;">MOST IMPORTANT</td></tr></tbody></table><table style="width: 100%"><tbody><tr><td>-3</td><td>-2</td><td>-1</td><td>0</td><td>1</td><td>2</td><td>3</td></tr><tr><td><label><input name="state2ment0" value="we2ll-3" id="state2ment0we2ll-3" type="radio"></label></td><td><label><input name="state2ment0" value="we2ll-2" id="state2ment0we2ll-2" type="radio"></label></td><td><label><input name="state2ment0" value="we2ll-1" id="state2ment0we2ll-1" type="radio"></label></td><td><label><input name="state2ment0" value="we2ll0" id="state2ment0we2ll0" type="radio"></label></td><td><label><input name="state2ment0" value="we2ll1" id="state2ment0we2ll1" type="radio"></label></td><td><label><input name="state2ment0" value="we2ll2" id="state2ment0we2ll2" type="radio"></label></td><td><label><input name="state2ment0" value="we2ll3" id="state2ment0we2ll3" type="radio"></label></td></tr></tbody></table></div></div><div draggable="true" ondragstart="drag(event)" class="row statement-stack sortable" id="state2ment1">Demonstrates the ability to collaborate with clients' families, social networks, care systems, and other service provides.<div id="state2ment1text"><hr style="width:65%; margin: 7px auto;"><table style="width:98%; font-size:small;"><tbody><tr><td style="float:left;">MOST UNIMPORTANT</td><td style="float:right; padding: 0 3px;">MOST IMPORTANT</td></tr></tbody></table><table style="width: 100%"><tbody><tr><td>-3</td><td>-2</td><td>-1</td><td>0</td><td>1</td><td>2</td><td>3</td></tr><tr><td><label><input name="state2ment1" value="we2ll-3" id="state2ment1we2ll-3" type="radio"></label></td><td><label><input name="state2ment1" value="we2ll-2" id="state2ment1we2ll-2" type="radio"></label></td><td><label><input name="state2ment1" value="we2ll-1" id="state2ment1we2ll-1" type="radio"></label></td><td><label><input name="state2ment1" value="we2ll0" id="state2ment1we2ll0" type="radio"></label></td><td><label><input name="state2ment1" value="we2ll1" id="state2ment1we2ll1" type="radio"></label></td><td><label><input name="state2ment1" value="we2ll2" id="state2ment1we2ll2" type="radio"></label></td><td><label><input name="state2ment1" value="we2ll3" id="state2ment1we2ll3" type="radio"></label></td></tr></tbody></table></div></div><div draggable="true" ondragstart="drag(event)" class="row statement-stack sortable" id="state2ment2">Demonstrates the ability to implement trauma-informed services.<div id="state2ment2text"><hr style="width:65%; margin: 7px auto;"><table style="width:98%; font-size:small;"><tbody><tr><td style="float:left;">MOST UNIMPORTANT</td><td style="float:right; padding: 0 3px;">MOST IMPORTANT</td></tr></tbody></table><table style="width: 100%"><tbody><tr><td>-3</td><td>-2</td><td>-1</td><td>0</td><td>1</td><td>2</td><td>3</td></tr><tr><td><label><input name="state2ment2" value="we2ll-3" id="state2ment2we2ll-3" type="radio"></label></td><td><label><input name="state2ment2" value="we2ll-2" id="state2ment2we2ll-2" type="radio"></label></td><td><label><input name="state2ment2" value="we2ll-1" id="state2ment2we2ll-1" type="radio"></label></td><td><label><input name="state2ment2" value="we2ll0" id="state2ment2we2ll0" type="radio"></label></td><td><label><input name="state2ment2" value="we2ll1" id="state2ment2we2ll1" type="radio"></label></td><td><label><input name="state2ment2" value="we2ll2" id="state2ment2we2ll2" type="radio"></label></td><td><label><input name="state2ment2" value="we2ll3" id="state2ment2we2ll3" type="radio"></label></td></tr></tbody></table></div></div><div draggable="true" ondragstart="drag(event)" class="row statement-stack sortable" id="state2ment3">Demonstrates the ability to prevent re-traumatization and prevent harm.<div id="state2ment3text"><hr style="width:65%; margin: 7px auto;"><table style="width:98%; font-size:small;"><tbody><tr><td style="float:left;">MOST UNIMPORTANT</td><td style="float:right; padding: 0 3px;">MOST IMPORTANT</td></tr></tbody></table><table style="width: 100%"><tbody><tr><td>-3</td><td>-2</td><td>-1</td><td>0</td><td>1</td><td>2</td><td>3</td></tr><tr><td><label><input name="state2ment3" value="we2ll-3" id="state2ment3we2ll-3" type="radio"></label></td><td><label><input name="state2ment3" value="we2ll-2" id="state2ment3we2ll-2" type="radio"></label></td><td><label><input name="state2ment3" value="we2ll-1" id="state2ment3we2ll-1" type="radio"></label></td><td><label><input name="state2ment3" value="we2ll0" id="state2ment3we2ll0" type="radio"></label></td><td><label><input name="state2ment3" value="we2ll1" id="state2ment3we2ll1" type="radio"></label></td><td><label><input name="state2ment3" value="we2ll2" id="state2ment3we2ll2" type="radio"></label></td><td><label><input name="state2ment3" value="we2ll3" id="state2ment3we2ll3" type="radio"></label></td></tr></tbody></table></div></div><div draggable="true" ondragstart="drag(event)" class="row statement-stack sortable" id="state2ment4">Demonstrates
+ the ability to establish safety (including using grounding skills 
+within and at the end of session), screen for harm to self or others, 
+and develop a safety plan.<div id="state2ment4text"><hr style="width:65%; margin: 7px auto;"><table style="width:98%; font-size:small;"><tbody><tr><td style="float:left;">MOST UNIMPORTANT</td><td style="float:right; padding: 0 3px;">MOST IMPORTANT</td></tr></tbody></table><table style="width: 100%"><tbody><tr><td>-3</td><td>-2</td><td>-1</td><td>0</td><td>1</td><td>2</td><td>3</td></tr><tr><td><label><input name="state2ment4" value="we2ll-3" id="state2ment4we2ll-3" type="radio"></label></td><td><label><input name="state2ment4" value="we2ll-2" id="state2ment4we2ll-2" type="radio"></label></td><td><label><input name="state2ment4" value="we2ll-1" id="state2ment4we2ll-1" type="radio"></label></td><td><label><input name="state2ment4" value="we2ll0" id="state2ment4we2ll0" type="radio"></label></td><td><label><input name="state2ment4" value="we2ll1" id="state2ment4we2ll1" type="radio"></label></td><td><label><input name="state2ment4" value="we2ll2" id="state2ment4we2ll2" type="radio"></label></td><td><label><input name="state2ment4" value="we2ll3" id="state2ment4we2ll3" type="radio"></label></td></tr></tbody></table></div></div><div draggable="true" ondragstart="drag(event)" class="row statement-stack sortable" id="state2ment5">Demonstrates the ability to manage personal reactions and distress within session when working with trauma exposed populations.<div id="state2ment5text"><hr style="width:65%; margin: 7px auto;"><table style="width:98%; font-size:small;"><tbody><tr><td style="float:left;">MOST UNIMPORTANT</td><td style="float:right; padding: 0 3px;">MOST IMPORTANT</td></tr></tbody></table><table style="width: 100%"><tbody><tr><td>-3</td><td>-2</td><td>-1</td><td>0</td><td>1</td><td>2</td><td>3</td></tr><tr><td><label><input name="state2ment5" value="we2ll-3" id="state2ment5we2ll-3" type="radio"></label></td><td><label><input name="state2ment5" value="we2ll-2" id="state2ment5we2ll-2" type="radio"></label></td><td><label><input name="state2ment5" value="we2ll-1" id="state2ment5we2ll-1" type="radio"></label></td><td><label><input name="state2ment5" value="we2ll0" id="state2ment5we2ll0" type="radio"></label></td><td><label><input name="state2ment5" value="we2ll1" id="state2ment5we2ll1" type="radio"></label></td><td><label><input name="state2ment5" value="we2ll2" id="state2ment5we2ll2" type="radio"></label></td><td><label><input name="state2ment5" value="we2ll3" id="state2ment5we2ll3" type="radio"></label></td></tr></tbody></table></div></div><div draggable="true" ondragstart="drag(event)" class="row statement-stack sortable" id="state2ment6">Demonstrates
+ the ability to address vicarious trauma, maintenance of own 
+psychological health, and self-care when working with trauma exposed 
+populations.<div id="state2ment6text"><hr style="width:65%; margin: 7px auto;"><table style="width:98%; font-size:small;"><tbody><tr><td style="float:left;">MOST UNIMPORTANT</td><td style="float:right; padding: 0 3px;">MOST IMPORTANT</td></tr></tbody></table><table style="width: 100%"><tbody><tr><td>-3</td><td>-2</td><td>-1</td><td>0</td><td>1</td><td>2</td><td>3</td></tr><tr><td><label><input name="state2ment6" value="we2ll-3" id="state2ment6we2ll-3" type="radio"></label></td><td><label><input name="state2ment6" value="we2ll-2" id="state2ment6we2ll-2" type="radio"></label></td><td><label><input name="state2ment6" value="we2ll-1" id="state2ment6we2ll-1" type="radio"></label></td><td><label><input name="state2ment6" value="we2ll0" id="state2ment6we2ll0" type="radio"></label></td><td><label><input name="state2ment6" value="we2ll1" id="state2ment6we2ll1" type="radio"></label></td><td><label><input name="state2ment6" value="we2ll2" id="state2ment6we2ll2" type="radio"></label></td><td><label><input name="state2ment6" value="we2ll3" id="state2ment6we2ll3" type="radio"></label></td></tr></tbody></table></div></div><div draggable="true" ondragstart="drag(event)" class="row statement-stack sortable" id="state2ment7">Demonstrates the ability to use client-centered counseling skills to establish a collaborative relationship and build trust.<div id="state2ment7text"><hr style="width:65%; margin: 7px auto;"><table style="width:98%; font-size:small;"><tbody><tr><td style="float:left;">MOST UNIMPORTANT</td><td style="float:right; padding: 0 3px;">MOST IMPORTANT</td></tr></tbody></table><table style="width: 100%"><tbody><tr><td>-3</td><td>-2</td><td>-1</td><td>0</td><td>1</td><td>2</td><td>3</td></tr><tr><td><label><input name="state2ment7" value="we2ll-3" id="state2ment7we2ll-3" type="radio"></label></td><td><label><input name="state2ment7" value="we2ll-2" id="state2ment7we2ll-2" type="radio"></label></td><td><label><input name="state2ment7" value="we2ll-1" id="state2ment7we2ll-1" type="radio"></label></td><td><label><input name="state2ment7" value="we2ll0" id="state2ment7we2ll0" type="radio"></label></td><td><label><input name="state2ment7" value="we2ll1" id="state2ment7we2ll1" type="radio"></label></td><td><label><input name="state2ment7" value="we2ll2" id="state2ment7we2ll2" type="radio"></label></td><td><label><input name="state2ment7" value="we2ll3" id="state2ment7we2ll3" type="radio"></label></td></tr></tbody></table></div></div><div draggable="true" ondragstart="drag(event)" class="row statement-stack sortable" id="state2ment8">Demonstrates
+ the ability to select developmentally appropriate strategies for work 
+with children and adolescents in trauma treatment.<div id="state2ment8text"><hr style="width:65%; margin: 7px auto;"><table style="width:98%; font-size:small;"><tbody><tr><td style="float:left;">MOST UNIMPORTANT</td><td style="float:right; padding: 0 3px;">MOST IMPORTANT</td></tr></tbody></table><table style="width: 100%"><tbody><tr><td>-3</td><td>-2</td><td>-1</td><td>0</td><td>1</td><td>2</td><td>3</td></tr><tr><td><label><input name="state2ment8" value="we2ll-3" id="state2ment8we2ll-3" type="radio"></label></td><td><label><input name="state2ment8" value="we2ll-2" id="state2ment8we2ll-2" type="radio"></label></td><td><label><input name="state2ment8" value="we2ll-1" id="state2ment8we2ll-1" type="radio"></label></td><td><label><input name="state2ment8" value="we2ll0" id="state2ment8we2ll0" type="radio"></label></td><td><label><input name="state2ment8" value="we2ll1" id="state2ment8we2ll1" type="radio"></label></td><td><label><input name="state2ment8" value="we2ll2" id="state2ment8we2ll2" type="radio"></label></td><td><label><input name="state2ment8" value="we2ll3" id="state2ment8we2ll3" type="radio"></label></td></tr></tbody></table></div></div><div draggable="true" ondragstart="drag(event)" class="row statement-stack sortable" id="state2ment9">Demonstrates
+ the ability to select and tailor approaches, and conduct on going 
+assessment of the effectiveness of trauma treatment based on the 
+individual experience and complex nature of trauma.<div id="state2ment9text"><hr style="width:65%; margin: 7px auto;"><table style="width:98%; font-size:small;"><tbody><tr><td style="float:left;">MOST UNIMPORTANT</td><td style="float:right; padding: 0 3px;">MOST IMPORTANT</td></tr></tbody></table><table style="width: 100%"><tbody><tr><td>-3</td><td>-2</td><td>-1</td><td>0</td><td>1</td><td>2</td><td>3</td></tr><tr><td><label><input name="state2ment9" value="we2ll-3" id="state2ment9we2ll-3" type="radio"></label></td><td><label><input name="state2ment9" value="we2ll-2" id="state2ment9we2ll-2" type="radio"></label></td><td><label><input name="state2ment9" value="we2ll-1" id="state2ment9we2ll-1" type="radio"></label></td><td><label><input name="state2ment9" value="we2ll0" id="state2ment9we2ll0" type="radio"></label></td><td><label><input name="state2ment9" value="we2ll1" id="state2ment9we2ll1" type="radio"></label></td><td><label><input name="state2ment9" value="we2ll2" id="state2ment9we2ll2" type="radio"></label></td><td><label><input name="state2ment9" value="we2ll3" id="state2ment9we2ll3" type="radio"></label></td></tr></tbody></table></div></div><div draggable="true" ondragstart="drag(event)" class="row statement-stack sortable" id="state2ment10">Demonstrates
+ the ability to recognize trauma early in treatment and conduct valid 
+and appropriate trauma screenings and assessments.<div id="state2ment10text"><hr style="width:65%; margin: 7px auto;"><table style="width:98%; font-size:small;"><tbody><tr><td style="float:left;">MOST UNIMPORTANT</td><td style="float:right; padding: 0 3px;">MOST IMPORTANT</td></tr></tbody></table><table style="width: 100%"><tbody><tr><td>-3</td><td>-2</td><td>-1</td><td>0</td><td>1</td><td>2</td><td>3</td></tr><tr><td><label><input name="state2ment10" value="we2ll-3" id="state2ment10we2ll-3" type="radio"></label></td><td><label><input name="state2ment10" value="we2ll-2" id="state2ment10we2ll-2" type="radio"></label></td><td><label><input name="state2ment10" value="we2ll-1" id="state2ment10we2ll-1" type="radio"></label></td><td><label><input name="state2ment10" value="we2ll0" id="state2ment10we2ll0" type="radio"></label></td><td><label><input name="state2ment10" value="we2ll1" id="state2ment10we2ll1" type="radio"></label></td><td><label><input name="state2ment10" value="we2ll2" id="state2ment10we2ll2" type="radio"></label></td><td><label><input name="state2ment10" value="we2ll3" id="state2ment10we2ll3" type="radio"></label></td></tr></tbody></table></div></div><div draggable="true" ondragstart="drag(event)" class="row statement-stack sortable" id="state2ment11">Demonstrates a willingness to ask about trauma exposure and symptoms, and implement non-avoidant treatment strategies.<div id="state2ment11text"><hr style="width:65%; margin: 7px auto;"><table style="width:98%; font-size:small;"><tbody><tr><td style="float:left;">MOST UNIMPORTANT</td><td style="float:right; padding: 0 3px;">MOST IMPORTANT</td></tr></tbody></table><table style="width: 100%"><tbody><tr><td>-3</td><td>-2</td><td>-1</td><td>0</td><td>1</td><td>2</td><td>3</td></tr><tr><td><label><input name="state2ment11" value="we2ll-3" id="state2ment11we2ll-3" type="radio"></label></td><td><label><input name="state2ment11" value="we2ll-2" id="state2ment11we2ll-2" type="radio"></label></td><td><label><input name="state2ment11" value="we2ll-1" id="state2ment11we2ll-1" type="radio"></label></td><td><label><input name="state2ment11" value="we2ll0" id="state2ment11we2ll0" type="radio"></label></td><td><label><input name="state2ment11" value="we2ll1" id="state2ment11we2ll1" type="radio"></label></td><td><label><input name="state2ment11" value="we2ll2" id="state2ment11we2ll2" type="radio"></label></td><td><label><input name="state2ment11" value="we2ll3" id="state2ment11we2ll3" type="radio"></label></td></tr></tbody></table></div></div><div draggable="true" ondragstart="drag(event)" class="row statement-stack sortable" id="state2ment12">Demonstrates the ability to appropriately reprocess traumatic memories and develop a coherent trauma narrative.<div id="state2ment12text"><hr style="width:65%; margin: 7px auto;"><table style="width:98%; font-size:small;"><tbody><tr><td style="float:left;">MOST UNIMPORTANT</td><td style="float:right; padding: 0 3px;">MOST IMPORTANT</td></tr></tbody></table><table style="width: 100%"><tbody><tr><td>-3</td><td>-2</td><td>-1</td><td>0</td><td>1</td><td>2</td><td>3</td></tr><tr><td><label><input name="state2ment12" value="we2ll-3" id="state2ment12we2ll-3" type="radio"></label></td><td><label><input name="state2ment12" value="we2ll-2" id="state2ment12we2ll-2" type="radio"></label></td><td><label><input name="state2ment12" value="we2ll-1" id="state2ment12we2ll-1" type="radio"></label></td><td><label><input name="state2ment12" value="we2ll0" id="state2ment12we2ll0" type="radio"></label></td><td><label><input name="state2ment12" value="we2ll1" id="state2ment12we2ll1" type="radio"></label></td><td><label><input name="state2ment12" value="we2ll2" id="state2ment12we2ll2" type="radio"></label></td><td><label><input name="state2ment12" value="we2ll3" id="state2ment12we2ll3" type="radio"></label></td></tr></tbody></table></div></div><div draggable="true" ondragstart="drag(event)" class="row statement-stack sortable" id="state2ment13">Demonstrates
+ the ability to use trauma-focused skills and evidence-based 
+interventions to resolve cognitive, emotional, sensory, and behavioral 
+symptoms.<div id="state2ment13text"><hr style="width:65%; margin: 7px auto;"><table style="width:98%; font-size:small;"><tbody><tr><td style="float:left;">MOST UNIMPORTANT</td><td style="float:right; padding: 0 3px;">MOST IMPORTANT</td></tr></tbody></table><table style="width: 100%"><tbody><tr><td>-3</td><td>-2</td><td>-1</td><td>0</td><td>1</td><td>2</td><td>3</td></tr><tr><td><label><input name="state2ment13" value="we2ll-3" id="state2ment13we2ll-3" type="radio"></label></td><td><label><input name="state2ment13" value="we2ll-2" id="state2ment13we2ll-2" type="radio"></label></td><td><label><input name="state2ment13" value="we2ll-1" id="state2ment13we2ll-1" type="radio"></label></td><td><label><input name="state2ment13" value="we2ll0" id="state2ment13we2ll0" type="radio"></label></td><td><label><input name="state2ment13" value="we2ll1" id="state2ment13we2ll1" type="radio"></label></td><td><label><input name="state2ment13" value="we2ll2" id="state2ment13we2ll2" type="radio"></label></td><td><label><input name="state2ment13" value="we2ll3" id="state2ment13we2ll3" type="radio"></label></td></tr></tbody></table></div></div><div draggable="true" ondragstart="drag(event)" class="row statement-stack sortable" id="state2ment14">Demonstrates
+ the ability to communicate knowledge about trauma effectively with 
+multiple audiences including, other providers, and community and policy 
+leaders.<div id="state2ment14text"><hr style="width:65%; margin: 7px auto;"><table style="width:98%; font-size:small;"><tbody><tr><td style="float:left;">MOST UNIMPORTANT</td><td style="float:right; padding: 0 3px;">MOST IMPORTANT</td></tr></tbody></table><table style="width: 100%"><tbody><tr><td>-3</td><td>-2</td><td>-1</td><td>0</td><td>1</td><td>2</td><td>3</td></tr><tr><td><label><input name="state2ment14" value="we2ll-3" id="state2ment14we2ll-3" type="radio"></label></td><td><label><input name="state2ment14" value="we2ll-2" id="state2ment14we2ll-2" type="radio"></label></td><td><label><input name="state2ment14" value="we2ll-1" id="state2ment14we2ll-1" type="radio"></label></td><td><label><input name="state2ment14" value="we2ll0" id="state2ment14we2ll0" type="radio"></label></td><td><label><input name="state2ment14" value="we2ll1" id="state2ment14we2ll1" type="radio"></label></td><td><label><input name="state2ment14" value="we2ll2" id="state2ment14we2ll2" type="radio"></label></td><td><label><input name="state2ment14" value="we2ll3" id="state2ment14we2ll3" type="radio"></label></td></tr></tbody></table></div></div><div draggable="true" ondragstart="drag(event)" class="row statement-stack sortable" id="state2ment15">Demonstrates
+ the ability to provide psychoeducation about trauma-informed services 
+(including neurobiology of trauma, coping skills, client's expectations 
+of treatment, common symptoms, screen and assessment).<div id="state2ment15text"><hr style="width:65%; margin: 7px auto;"><table style="width:98%; font-size:small;"><tbody><tr><td style="float:left;">MOST UNIMPORTANT</td><td style="float:right; padding: 0 3px;">MOST IMPORTANT</td></tr></tbody></table><table style="width: 100%"><tbody><tr><td>-3</td><td>-2</td><td>-1</td><td>0</td><td>1</td><td>2</td><td>3</td></tr><tr><td><label><input name="state2ment15" value="we2ll-3" id="state2ment15we2ll-3" type="radio"></label></td><td><label><input name="state2ment15" value="we2ll-2" id="state2ment15we2ll-2" type="radio"></label></td><td><label><input name="state2ment15" value="we2ll-1" id="state2ment15we2ll-1" type="radio"></label></td><td><label><input name="state2ment15" value="we2ll0" id="state2ment15we2ll0" type="radio"></label></td><td><label><input name="state2ment15" value="we2ll1" id="state2ment15we2ll1" type="radio"></label></td><td><label><input name="state2ment15" value="we2ll2" id="state2ment15we2ll2" type="radio"></label></td><td><label><input name="state2ment15" value="we2ll3" id="state2ment15we2ll3" type="radio"></label></td></tr></tbody></table></div></div><div draggable="true" ondragstart="drag(event)" class="row statement-stack sortable" id="state2ment16">Demonstrates
+ the ability to recognize own limits of clinical competence and seek 
+supervision, consultation, or make appropriate referrals when necessary.<div id="state2ment16text"><hr style="width:65%; margin: 7px auto;"><table style="width:98%; font-size:small;"><tbody><tr><td style="float:left;">MOST UNIMPORTANT</td><td style="float:right; padding: 0 3px;">MOST IMPORTANT</td></tr></tbody></table><table style="width: 100%"><tbody><tr><td>-3</td><td>-2</td><td>-1</td><td>0</td><td>1</td><td>2</td><td>3</td></tr><tr><td><label><input name="state2ment16" value="we2ll-3" id="state2ment16we2ll-3" type="radio"></label></td><td><label><input name="state2ment16" value="we2ll-2" id="state2ment16we2ll-2" type="radio"></label></td><td><label><input name="state2ment16" value="we2ll-1" id="state2ment16we2ll-1" type="radio"></label></td><td><label><input name="state2ment16" value="we2ll0" id="state2ment16we2ll0" type="radio"></label></td><td><label><input name="state2ment16" value="we2ll1" id="state2ment16we2ll1" type="radio"></label></td><td><label><input name="state2ment16" value="we2ll2" id="state2ment16we2ll2" type="radio"></label></td><td><label><input name="state2ment16" value="we2ll3" id="state2ment16we2ll3" type="radio"></label></td></tr></tbody></table></div></div><div draggable="true" ondragstart="drag(event)" class="row statement-stack sortable" id="state2ment17">Demonstrates the use of culturally sensitive intervention and treatment strategies.<div id="state2ment17text"><hr style="width:65%; margin: 7px auto;"><table style="width:98%; font-size:small;"><tbody><tr><td style="float:left;">MOST UNIMPORTANT</td><td style="float:right; padding: 0 3px;">MOST IMPORTANT</td></tr></tbody></table><table style="width: 100%"><tbody><tr><td>-3</td><td>-2</td><td>-1</td><td>0</td><td>1</td><td>2</td><td>3</td></tr><tr><td><label><input name="state2ment17" value="we2ll-3" id="state2ment17we2ll-3" type="radio"></label></td><td><label><input name="state2ment17" value="we2ll-2" id="state2ment17we2ll-2" type="radio"></label></td><td><label><input name="state2ment17" value="we2ll-1" id="state2ment17we2ll-1" type="radio"></label></td><td><label><input name="state2ment17" value="we2ll0" id="state2ment17we2ll0" type="radio"></label></td><td><label><input name="state2ment17" value="we2ll1" id="state2ment17we2ll1" type="radio"></label></td><td><label><input name="state2ment17" value="we2ll2" id="state2ment17we2ll2" type="radio"></label></td><td><label><input name="state2ment17" value="we2ll3" id="state2ment17we2ll3" type="radio"></label></td></tr></tbody></table></div></div><div draggable="true" ondragstart="drag(event)" class="row statement-stack sortable" id="state2ment18">Demonstrates
+ the ability to conceptualize the individual and the trauma experience 
+through a sociocultural lens and context of their environment.<div id="state2ment18text"><hr style="width:65%; margin: 7px auto;"><table style="width:98%; font-size:small;"><tbody><tr><td style="float:left;">MOST UNIMPORTANT</td><td style="float:right; padding: 0 3px;">MOST IMPORTANT</td></tr></tbody></table><table style="width: 100%"><tbody><tr><td>-3</td><td>-2</td><td>-1</td><td>0</td><td>1</td><td>2</td><td>3</td></tr><tr><td><label><input name="state2ment18" value="we2ll-3" id="state2ment18we2ll-3" type="radio"></label></td><td><label><input name="state2ment18" value="we2ll-2" id="state2ment18we2ll-2" type="radio"></label></td><td><label><input name="state2ment18" value="we2ll-1" id="state2ment18we2ll-1" type="radio"></label></td><td><label><input name="state2ment18" value="we2ll0" id="state2ment18we2ll0" type="radio"></label></td><td><label><input name="state2ment18" value="we2ll1" id="state2ment18we2ll1" type="radio"></label></td><td><label><input name="state2ment18" value="we2ll2" id="state2ment18we2ll2" type="radio"></label></td><td><label><input name="state2ment18" value="we2ll3" id="state2ment18we2ll3" type="radio"></label></td></tr></tbody></table></div></div><div draggable="true" ondragstart="drag(event)" class="row statement-stack sortable" id="state2ment19">Demonstrates
+ the use of a strengths-based approach to promote resilience (including 
+viewing trauma-related behaviors as adaptive, confidence in recovery, 
+facilitating hope, and enhancing protective factors).<div id="state2ment19text"><hr style="width:65%; margin: 7px auto;"><table style="width:98%; font-size:small;"><tbody><tr><td style="float:left;">MOST UNIMPORTANT</td><td style="float:right; padding: 0 3px;">MOST IMPORTANT</td></tr></tbody></table><table style="width: 100%"><tbody><tr><td>-3</td><td>-2</td><td>-1</td><td>0</td><td>1</td><td>2</td><td>3</td></tr><tr><td><label><input name="state2ment19" value="we2ll-3" id="state2ment19we2ll-3" type="radio"></label></td><td><label><input name="state2ment19" value="we2ll-2" id="state2ment19we2ll-2" type="radio"></label></td><td><label><input name="state2ment19" value="we2ll-1" id="state2ment19we2ll-1" type="radio"></label></td><td><label><input name="state2ment19" value="we2ll0" id="state2ment19we2ll0" type="radio"></label></td><td><label><input name="state2ment19" value="we2ll1" id="state2ment19we2ll1" type="radio"></label></td><td><label><input name="state2ment19" value="we2ll2" id="state2ment19we2ll2" type="radio"></label></td><td><label><input name="state2ment19" value="we2ll3" id="state2ment19we2ll3" type="radio"></label></td></tr></tbody></table></div></div><div draggable="true" ondragstart="drag(event)" class="row statement-stack sortable" id="state2ment20">Empowers the client to be in control of his/her own recovery.<div id="state2ment20text"><hr style="width:65%; margin: 7px auto;"><table style="width:98%; font-size:small;"><tbody><tr><td style="float:left;">MOST UNIMPORTANT</td><td style="float:right; padding: 0 3px;">MOST IMPORTANT</td></tr></tbody></table><table style="width: 100%"><tbody><tr><td>-3</td><td>-2</td><td>-1</td><td>0</td><td>1</td><td>2</td><td>3</td></tr><tr><td><label><input name="state2ment20" value="we2ll-3" id="state2ment20we2ll-3" type="radio"></label></td><td><label><input name="state2ment20" value="we2ll-2" id="state2ment20we2ll-2" type="radio"></label></td><td><label><input name="state2ment20" value="we2ll-1" id="state2ment20we2ll-1" type="radio"></label></td><td><label><input name="state2ment20" value="we2ll0" id="state2ment20we2ll0" type="radio"></label></td><td><label><input name="state2ment20" value="we2ll1" id="state2ment20we2ll1" type="radio"></label></td><td><label><input name="state2ment20" value="we2ll2" id="state2ment20we2ll2" type="radio"></label></td><td><label><input name="state2ment20" value="we2ll3" id="state2ment20we2ll3" type="radio"></label></td></tr></tbody></table></div></div><div draggable="true" ondragstart="drag(event)" class="row statement-stack sortable" id="state2ment21">Demonstrates the ability to reduce symptom distress through resource building, coping strategies, grounding skills, etc.<div id="state2ment21text"><hr style="width:65%; margin: 7px auto;"><table style="width:98%; font-size:small;"><tbody><tr><td style="float:left;">MOST UNIMPORTANT</td><td style="float:right; padding: 0 3px;">MOST IMPORTANT</td></tr></tbody></table><table style="width: 100%"><tbody><tr><td>-3</td><td>-2</td><td>-1</td><td>0</td><td>1</td><td>2</td><td>3</td></tr><tr><td><label><input name="state2ment21" value="we2ll-3" id="state2ment21we2ll-3" type="radio"></label></td><td><label><input name="state2ment21" value="we2ll-2" id="state2ment21we2ll-2" type="radio"></label></td><td><label><input name="state2ment21" value="we2ll-1" id="state2ment21we2ll-1" type="radio"></label></td><td><label><input name="state2ment21" value="we2ll0" id="state2ment21we2ll0" type="radio"></label></td><td><label><input name="state2ment21" value="we2ll1" id="state2ment21we2ll1" type="radio"></label></td><td><label><input name="state2ment21" value="we2ll2" id="state2ment21we2ll2" type="radio"></label></td><td><label><input name="state2ment21" value="we2ll3" id="state2ment21we2ll3" type="radio"></label></td></tr></tbody></table></div></div><div draggable="true" ondragstart="drag(event)" class="row statement-stack sortable" id="state2ment22">Demonstrates awareness of the impact of one's own history, values, and vulnerabilities on trauma treatment delivery.<div id="state2ment22text"><hr style="width:65%; margin: 7px auto;"><table style="width:98%; font-size:small;"><tbody><tr><td style="float:left;">MOST UNIMPORTANT</td><td style="float:right; padding: 0 3px;">MOST IMPORTANT</td></tr></tbody></table><table style="width: 100%"><tbody><tr><td>-3</td><td>-2</td><td>-1</td><td>0</td><td>1</td><td>2</td><td>3</td></tr><tr><td><label><input name="state2ment22" value="we2ll-3" id="state2ment22we2ll-3" type="radio"></label></td><td><label><input name="state2ment22" value="we2ll-2" id="state2ment22we2ll-2" type="radio"></label></td><td><label><input name="state2ment22" value="we2ll-1" id="state2ment22we2ll-1" type="radio"></label></td><td><label><input name="state2ment22" value="we2ll0" id="state2ment22we2ll0" type="radio"></label></td><td><label><input name="state2ment22" value="we2ll1" id="state2ment22we2ll1" type="radio"></label></td><td><label><input name="state2ment22" value="we2ll2" id="state2ment22we2ll2" type="radio"></label></td><td><label><input name="state2ment22" value="we2ll3" id="state2ment22we2ll3" type="radio"></label></td></tr></tbody></table></div></div></div>     
+          
+  <div id="we2lls" class="row" style="margin-top: 200px;">
+    <table style="width:98%;font-weight:bolder;"><tbody><tr><td style="float:left;">MOST UNIMPORTANT</td><td style="text-align: center;">MODERATELY UNIMPORTANT</td><td style="text-align: center; padding-left: 15px;">MODERATELY IMPORTANT</td><td style="float:right; padding: 0 10px;">MOST IMPORTANT</td></tr></tbody></table>
+    <br>
+    
+     <div style="float: left; margin-right: 1%; width: 13%;"><h4 style="text-align: center;" id="h-3"> -3</h4><div ondrop="drop(event)" ondragover="allowDrop(event)" class="well" id="we2ll-3" style="background: lightgreen;"></div></div><div style="float: left; margin-right: 1%; width: 13%;"><h4 style="text-align: center;" id="h-2"> -2</h4><div ondrop="drop(event)" ondragover="allowDrop(event)" class="well" id="we2ll-2" style="background: lightgreen;"></div></div><div style="float: left; margin-right: 1%; width: 13%;"><h4 style="text-align: center;" id="h-1"> -1</h4><div ondrop="drop(event)" ondragover="allowDrop(event)" class="well" id="we2ll-1" style="background: lightgreen;"></div></div><div style="float: left; margin-right: 1%; width: 13%;"><h4 style="text-align: center;" id="h0"> 0</h4><div ondrop="drop(event)" ondragover="allowDrop(event)" class="well" id="we2ll0" style="background: lightgreen;"></div></div><div style="float: left; margin-right: 1%; width: 13%;"><h4 style="text-align: center;" id="h1"> 1</h4><div ondrop="drop(event)" ondragover="allowDrop(event)" class="well" id="we2ll1" style="background: lightgreen;"></div></div><div style="float: left; margin-right: 1%; width: 13%;"><h4 style="text-align: center;" id="h2"> 2</h4><div ondrop="drop(event)" ondragover="allowDrop(event)" class="well" id="we2ll2" style="background: lightgreen;"></div></div><div style="float: left; margin-right: 1%; width: 13%;"><h4 style="text-align: center;" id="h3"> 3</h4><div ondrop="drop(event)" ondragover="allowDrop(event)" class="well" id="we2ll3" style="background: lightgreen;"></div></div></div>   
+
+     </div>
+    </div>
+  </div>
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h4 class="panel-title">
+        <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#collapseFive">
+          <span class="glyphicon glyphicon-plus"></span>
+          Skills Post-sort Questions:
+        </a>
+      </h4>
+    </div>
+    <div id="collapseFive" class="panel-collapse collapse">
+      <div class="panel-body">
+          <table class="table table-striped">
+              <tbody><tr>
+                  <td>What skill is not represented here that you think is important to include? <textarea class="form-control required" rows="3" name="missing2" onkeyup="validateForm()"></textarea></td>
+              </tr>
+              <tr>
+                  <td>Would you change the wording of any of the skill statements? If so how would you phrase them? <textarea class="form-control required" rows="3" name="reword2" onkeyup="validateForm()"></textarea></td>
+              </tr>
+              <tr>
+                  <td>Why did you rank the TOP 2 categories the HIGHEST? What is MOST important about these statements? <textarea class="form-control required" rows="3" name="top2" onkeyup="validateForm()"></textarea></td>
+              </tr>
+              <tr>
+                  <td>Why did you rank the BOTTOM 2 categories the LOWEST? What is MOST unimportant about these statements? <textarea class="form-control required" rows="3" name="bottom2" onkeyup="validateForm()"></textarea></td>
+              </tr>
+              <tr>
+                  <td>Is there anything other information you would like to provide? <textarea class="form-control required" rows="3" name="other2Info" onkeyup="validateForm()"></textarea></td>
+              </tr>
+          </tbody></table>
+   </div>
+   </div>
+    
+ </div>
+    <button style="margin: 10px 0 0 0;" type="submit" class="btn btn-primary" id="submitButton" disabled="disabled"><i class="fa fa-paper-plane"></i> Submit</button>
+      </div>
+</form>  
+    
+    <script>
+        // Add wells and statements for first q set
+        for (i = 0; i < statementArray.length; i++) {
+            var text1 = "<div draggable='true' ondragstart='drag(event)' class='row statement-stack sortable' id='statement" + i + "'>" + statementArray[i] + "<div id='statement" + i + "text'><hr style='width:65%; margin: 7px auto;' /><table style='width:98%; font-size:small;'><tr><td style='float:left;'>MOST UNIMPORTANT</td><td style='float:right; padding: 0 3px;'>MOST IMPORTANT</td></tr></table><table style='width: 100%'><tr>";
+            for (j = 0; j < maxPerWell.length; j++) {
+                var rating = j - offSet;
+                text1 += "<td>" + rating + "</td>";
+            }
+            text1 += "</tr><tr>";
+            for (j = 0; j < maxPerWell.length; j++) {
+                var rating = j - offSet;
+                text1 += "<td><label><input type='radio' name='statement" + i + "' value='well" + rating + "' id='statement" + i + "well" + rating + "'></label></td>";
+            }
+            text1 += "</tr></table></div></div>";
+            $("#statements").append(text1);
+        } 
+        
+        for (i = 0; i < maxPerWell.length; i++) {
+            var rating = i - offSet;
+            var text1 = "<div style='float: left; margin-right: 1%; width: " + wellWidth + "%;'><h4 style='text-align: center;' id='h" + rating + "'>";
+            /* if (i == 0) {
+                text1 += "<i class='fa fa-thumbs-down'></i> Most Disagree<br />";
+            }
+            if (i == (maxPerWell.length - 1)) {
+                text1 += "Most Agree <i class='fa fa-thumbs-up'></i><br />";
+            } */
+            text1 += " " + rating + "</h4><div ondrop='drop(event)' ondragover='allowDrop(event)' class='well' id='well" + rating + "' style='background: lightgreen;'></div></div>";
+            $("#wells").append(text1);
+        }
+        
+        // Add wells and statements for second q set
+        for (i = 0; i < state2mentArray.length; i++) {
+            var text1 = "<div draggable='true' ondragstart='drag(event)' class='row statement-stack sortable' id='state2ment" + i + "'>" + state2mentArray[i] + "<div id='state2ment" + i + "text'><hr style='width:65%; margin: 7px auto;' /><table style='width:98%; font-size:small;'><tr><td style='float:left;'>MOST UNIMPORTANT</td><td style='float:right; padding: 0 3px;'>MOST IMPORTANT</td></tr></table><table style='width: 100%'><tr>";
+            for (j = 0; j < maxPerWe2ll.length; j++) {
+                var rating = j - offSet;
+                text1 += "<td>" + rating + "</td>";
+            }
+            text1 += "</tr><tr>";
+            for (j = 0; j < maxPerWe2ll.length; j++) {
+                var rating = j - offSet;
+                text1 += "<td><label><input type='radio' name='state2ment" + i + "' value='we2ll" + rating + "' id='state2ment" + i + "we2ll" + rating + "'></label></td>";
+            }
+            text1 += "</tr></table></div></div>";
+            $("#state2ments").append(text1);
+        } 
+        
+        for (i = 0; i < maxPerWe2ll.length; i++) {
+            var rating = i - offSet;
+            var text1 = "<div style='float: left; margin-right: 1%; width: " + wellWidth + "%;'><h4 style='text-align: center;' id='h" + rating + "'>";
+            /* if (i == 0) {
+                text1 += "<i class='fa fa-thumbs-down'></i> Most Disagree<br />";
+            }
+            if (i == (maxPerWell.length - 1)) {
+                text1 += "Most Agree <i class='fa fa-thumbs-up'></i><br />";
+            } */
+            text1 += " " + rating + "</h4><div ondrop='drop(event)' ondragover='allowDrop(event)' class='well' id='we2ll" + rating + "' style='background: lightgreen;'></div></div>";
+            $("#we2lls").append(text1);
+        }
+        
+        // Makes the + turn into a minus when the div is collapsed
+        $('.collapse').on('shown.bs.collapse', function(){
+        $(this).parent().find(".glyphicon-plus").removeClass("glyphicon-plus").addClass("glyphicon-minus");
+        }).on('hidden.bs.collapse', function(){
+        $(this).parent().find(".glyphicon-minus").removeClass("glyphicon-minus").addClass("glyphicon-plus");
+        });
+        
+        function validateForm() { // Check after each modification to the form to ensure all field are filled in before submitting
+            // var reqArray = document.getElementsByClassName("required");
+            var reqFilled = true;
+            /* for (vali=0; vali < reqArray.length; vali++) {
+                if (reqArray[vali].value == "") {
+                    reqFilled = false;
+                }
+            } */
+            if (reqFilled && wellFull.every(checkWells) && well2Full.every(checkWells)) {
+                document.getElementById("submitButton").disabled = false;
+            } else {
+                document.getElementById("submitButton").disabled = true;
+            }
+        }
+        
+        // Function for running through all wells to ensure they're full
+        function checkWells(fullWell) {
+            return fullWell;
+        }
+        
+        // Toggles on or off the textarea for other university course offerings
+        function enableMore(yon, textBlock) {
+            if(yon == "yes") {
+                $("#" + textBlock).prop("disabled", false);
+                $("#" + textBlock).addClass("required");
+                $("#" + textBlock + "Span").css("display", "inline");
+            } else {
+                $("#" + textBlock).prop("disabled", true);
+                $("#" + textBlock).removeClass("required");
+                $("#" + textBlock + "Span").css("display", "none");
+            }
+        }
+        
+        // For tracking all questions to ensure alignment with Google Sheet. For Testing only.
+        /* var testing = document.getElementById("qSortForm");
+        for (i = 0; i < testing.length; i++) {
+            console.log(testing.elements[i].name);
+        }
+        
+        // Ensure there are the same number of slots as statements
+        var testingSlots = 0;
+        for (i=0; i < maxPerWe2ll.length; i++) {
+            testingSlots += maxPerWe2ll[i];
+        }
+        console.log(testingSlots);
+        console.log(state2mentArray.length);
+        
+        
+        // Match statements with numbers
+        for (i=0; i < state2mentArray.length; i++) {
+            console.log("state2ment" + i + " = " + state2mentArray[i]);
+        }
+        */
+        
+          (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+          (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+          m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+          })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+          ga('create', 'UA-92412307-1', 'auto');
+          ga('send', 'pageview');
+    </script>
+    <script src="Q%20Sort_files/google-script.js"></script> <!-- Adding this to link to a Google Sheet for data collection -->
+    </div>
+
+</body></html>
